@@ -138,15 +138,14 @@ impl Enemy {
 
         let img_path = match kind {
             // FIXME: No absolute paths on system!
-            // TODO: Find pngs
             EnemyKind::Easy => {
-                "/home/jack/projects/recurse-application/space-invaders-rust/assets/penguin.png"
+                "/home/jack/projects/recurse-application/space-invaders-rust/assets/balloon.png"
             }
             EnemyKind::Medium => {
-                "/home/jack/projects/recurse-application/space-invaders-rust/assets/penguin.png"
+                "/home/jack/projects/recurse-application/space-invaders-rust/assets/basketball.png"
             }
             EnemyKind::Hard => {
-                "/home/jack/projects/recurse-application/space-invaders-rust/assets/penguin.png"
+                "/home/jack/projects/recurse-application/space-invaders-rust/assets/vacuum.png"
             }
         };
 
@@ -185,7 +184,7 @@ struct Player {
 impl Player {
     fn new(x: i32, y: i32) -> Self {
         let p = Picture::for_filename(
-            "/home/jack/projects/recurse-application/space-invaders-rust/assets/penguin.png",
+            "/home/jack/projects/recurse-application/space-invaders-rust/assets/penelope.png",
         );
         p.set_size_request(SHIP_SIZE, SHIP_SIZE);
 
