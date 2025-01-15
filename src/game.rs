@@ -4,11 +4,12 @@ use gtk4 as gtk;
 
 use crate::event::{Direction, Event, EventKind};
 
-const SHIP_SIZE: i32 = 50;
+const ENEMY_SIZE: i32 = 60;
+const PLAYER_SIZE: i32 = 100;
 const X_GAP_SIZE: i32 = 10;
 const Y_GAP_SIZE: i32 = 10;
 const MOVES_PER_ROW: i32 = 10;
-const MOVE_SIZE: i32 = 5;
+const MOVE_SIZE: i32 = 10;
 
 pub struct Game {
     enemies: Vec<Vec<Enemy>>,
@@ -34,23 +35,23 @@ impl Game {
     pub fn new(width: i32, height: i32) -> Self {
         // Ahhhh algebra
         let enemies_per_row =
-            (width - (MOVES_PER_ROW * MOVE_SIZE) + X_GAP_SIZE) / (X_GAP_SIZE + SHIP_SIZE);
+            (width - (MOVES_PER_ROW * MOVE_SIZE) + X_GAP_SIZE) / (X_GAP_SIZE + ENEMY_SIZE);
 
         Self {
             width,
             moves: 0,
             player: Player::new(
                 // Midpoint on bottom row
-                (width / 2) - (SHIP_SIZE / 2),
-                height - SHIP_SIZE,
+                (width / 2) - (PLAYER_SIZE / 2),
+                height - PLAYER_SIZE,
             ),
             enemies: vec![
                 Enemy::generate_row(enemies_per_row, EnemyKind::Hard, 0),
-                Enemy::generate_row(enemies_per_row, EnemyKind::Medium, SHIP_SIZE + Y_GAP_SIZE),
+                Enemy::generate_row(enemies_per_row, EnemyKind::Medium, ENEMY_SIZE + Y_GAP_SIZE),
                 Enemy::generate_row(
                     enemies_per_row,
                     EnemyKind::Easy,
-                    2 * (SHIP_SIZE + Y_GAP_SIZE),
+                    2 * (ENEMY_SIZE + Y_GAP_SIZE),
                 ),
             ],
         }
@@ -78,8 +79,8 @@ impl Game {
 
         if direction == Direction::Right {
             self.player.location.x += MOVE_SIZE;
-            if self.player.location.x > (self.width - SHIP_SIZE) {
-                self.player.location.x = self.width - SHIP_SIZE;
+            if self.player.location.x > (self.width - PLAYER_SIZE) {
+                self.player.location.x = self.width - PLAYER_SIZE;
             }
         }
     }
@@ -151,12 +152,12 @@ impl Enemy {
 
         for i in 0..count {
             let p = Picture::for_filename(img_path);
-            p.set_size_request(SHIP_SIZE, SHIP_SIZE);
+            p.set_size_request(ENEMY_SIZE, ENEMY_SIZE);
             enemies.push(Self {
                 kind,
                 image: p,
                 location: Location {
-                    x: start_x + i * (SHIP_SIZE + X_GAP_SIZE),
+                    x: start_x + i * (ENEMY_SIZE + X_GAP_SIZE),
                     y,
                 },
                 rendered: false,
@@ -186,7 +187,7 @@ impl Player {
         let p = Picture::for_filename(
             "/home/jack/projects/recurse-application/space-invaders-rust/assets/penelope.png",
         );
-        p.set_size_request(SHIP_SIZE, SHIP_SIZE);
+        p.set_size_request(PLAYER_SIZE, PLAYER_SIZE);
 
         Self {
             location: Location { x, y },
