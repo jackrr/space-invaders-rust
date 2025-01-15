@@ -10,7 +10,7 @@ mod event;
 mod game;
 
 const WIDTH: i32 = 800;
-const HEIGHT: i32 = 200;
+const HEIGHT: i32 = 600;
 
 fn main() -> glib::ExitCode {
     let application = Application::builder()
