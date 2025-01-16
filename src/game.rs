@@ -1,8 +1,6 @@
 use gtk::prelude::*;
-use gtk::{Fixed, Picture};
+use gtk::{ApplicationWindow, Fixed, Picture};
 use gtk4 as gtk;
-
-use crate::event::{Direction, Event, EventKind};
 
 const ENEMY_SIZE: i32 = 60;
 const PLAYER_SIZE: i32 = 100;
@@ -11,33 +9,33 @@ const Y_GAP_SIZE: i32 = 10;
 const MOVES_PER_ROW: i32 = 10;
 const MOVE_SIZE: i32 = 10;
 
+#[derive(PartialEq, Eq, Debug)]
+pub enum Direction {
+    Left,
+    Right,
+}
+
 pub struct Game {
     enemies: Vec<Vec<Enemy>>,
     player: Player,
     moves: i32,
     width: i32,
+    view: Fixed,
 }
 
+unsafe impl Send for Game {}
+
 impl Game {
-    pub fn process_event(&mut self, event: Event, fixed: &Fixed) {
-        println!("Received move {:?}", event.kind);
-        if event.kind == EventKind::EnemyMove {
-            self.move_enemies();
-        }
-
-        if event.kind == EventKind::PlayerMove {
-            self.move_player(event.direction.unwrap())
-        }
-
-        self.render(fixed);
-    }
-
-    pub fn new(width: i32, height: i32) -> Self {
+    pub fn new(width: i32, height: i32, window: &ApplicationWindow) -> Self {
         // Ahhhh algebra
         let enemies_per_row =
             (width - (MOVES_PER_ROW * MOVE_SIZE) + X_GAP_SIZE) / (X_GAP_SIZE + ENEMY_SIZE);
 
+        let fixed = Fixed::new();
+        window.set_child(Some(&fixed));
+
         Self {
+            view: fixed,
             width,
             moves: 0,
             player: Player::new(
@@ -57,19 +55,19 @@ impl Game {
         }
     }
 
-    fn render(&mut self, fixed: &Fixed) {
+    pub fn render(&mut self) {
         // Renders player and enemies to the GTK fixed view.
         // Uses latest locations defined on the entities.
-        self.player.render(fixed);
+        self.player.render(&self.view);
         for row in self.enemies.iter_mut() {
             for enemy in row.iter_mut() {
-                enemy.render(fixed);
+                enemy.render(&self.view);
             }
         }
     }
 
-    fn move_player(&mut self, direction: Direction) {
-        println!("Handling move {:?}", direction);
+    pub fn move_player(&mut self, direction: Direction) {
+        // println!("Handling move {:?}", direction);
         if direction == Direction::Left {
             self.player.location.x -= MOVE_SIZE;
             if self.player.location.x < 0 {
@@ -85,7 +83,7 @@ impl Game {
         }
     }
 
-    fn move_enemies(&mut self) {
+    pub fn move_enemies(&mut self) {
         // Shifts enemies by 1 step.
         // On even shift #s, moves to the right.
         // On odd shift #s, moves to the left.

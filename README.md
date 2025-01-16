@@ -2,11 +2,6 @@
 
 Partial implementation of space invaders in Rust with GTK.
 
-Struggled to figure out how to pass around game state (`Game` struct
-instance) to GTK callback functions. Made the call to instead use a
-message passing pattern to process changes triggered within the
-callbacks - at this point enemy moving and keyboard interactions.
-
 ## Known issues
 
 - Assets assume local filepaths on my host machine. Should figure out
