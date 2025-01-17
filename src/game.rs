@@ -23,6 +23,7 @@ pub struct Game {
     view: Fixed,
 }
 
+// Enable use with Mutex
 unsafe impl Send for Game {}
 
 impl Game {
@@ -34,7 +35,7 @@ impl Game {
         let fixed = Fixed::new();
         window.set_child(Some(&fixed));
 
-        Self {
+        let mut game = Self {
             view: fixed,
             width,
             moves: 0,
@@ -52,18 +53,12 @@ impl Game {
                     2 * (ENEMY_SIZE + Y_GAP_SIZE),
                 ),
             ],
-        }
-    }
+        };
 
-    pub fn render(&mut self) {
-        // Renders player and enemies to the GTK fixed view.
-        // Uses latest locations defined on the entities.
-        self.player.render(&self.view);
-        for row in self.enemies.iter_mut() {
-            for enemy in row.iter_mut() {
-                enemy.render(&self.view);
-            }
-        }
+        game.render_player();
+        game.render_enemies();
+
+        game
     }
 
     pub fn move_player(&mut self, direction: Direction) {
@@ -81,6 +76,8 @@ impl Game {
                 self.player.location.x = self.width - PLAYER_SIZE;
             }
         }
+
+        self.render_player();
     }
 
     pub fn move_enemies(&mut self) {
@@ -108,6 +105,24 @@ impl Game {
                 }
             }
         }
+
+        self.render_enemies();
+    }
+
+    fn render_enemies(&mut self) {
+        // Renders enemies to the GTK fixed view.
+        // Uses latest locations defined on the enemies.
+        for row in self.enemies.iter_mut() {
+            for enemy in row.iter_mut() {
+                enemy.render(&self.view);
+            }
+        }
+    }
+
+    fn render_player(&mut self) {
+        // Renders player to GTK fixed view.
+        // Uses latest location on player.
+        self.player.render(&self.view);
     }
 }
 

@@ -34,7 +34,6 @@ fn main() -> glib::ExitCode {
         thread::spawn(move || loop {
             let mut game = game_mutex_enemies.lock().unwrap();
             game.move_enemies();
-            game.render();
             drop(game);
             thread::sleep(time::Duration::from_secs(1));
         });
@@ -47,11 +46,9 @@ fn main() -> glib::ExitCode {
             match key {
                 gtk::gdk::Key::Left => {
                     game.move_player(Direction::Left);
-                    game.render();
                 }
                 gtk::gdk::Key::Right => {
                     game.move_player(Direction::Right);
-                    game.render();
                 }
                 _ => (),
             }
