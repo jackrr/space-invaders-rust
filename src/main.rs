@@ -29,6 +29,7 @@ fn main() -> glib::ExitCode {
         let game = Game::new(WIDTH, HEIGHT, &window);
         let game_mutex_enemies = Arc::new(Mutex::new(game));
         let game_mutex_user_input = Arc::clone(&game_mutex_enemies);
+        let game_animations = Arc::clone(&game_mutex_enemies);
 
         // Move enemies every 1 second
         thread::spawn(move || loop {
@@ -36,6 +37,13 @@ fn main() -> glib::ExitCode {
             game.move_enemies();
             drop(game);
             thread::sleep(time::Duration::from_secs(1));
+        });
+
+        thread::spawn(move || loop {
+            let mut game = game_animations.lock().unwrap();
+            game.next_tick();
+            drop(game);
+            thread::sleep(time::Duration::from_millis(150));
         });
 
         // Listen for keyboard interactions
@@ -49,6 +57,9 @@ fn main() -> glib::ExitCode {
                 }
                 gtk::gdk::Key::Right => {
                     game.move_player(Direction::Right);
+                }
+                gtk::gdk::Key::Up => {
+                    game.fire_laser();
                 }
                 _ => (),
             }
