@@ -1,5 +1,4 @@
 use std::cmp::Ordering;
-use std::collections::HashMap;
 
 use gtk::prelude::*;
 use gtk::{ApplicationWindow, Fixed, Picture};

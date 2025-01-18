@@ -4,6 +4,7 @@ use gtk4 as gtk;
 use std::thread;
 use std::time;
 
+use std::cell::Cell;
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -48,6 +49,7 @@ fn main() -> glib::ExitCode {
 
         // Listen for keyboard interactions
         let key_ev_controller = gtk::EventControllerKey::new();
+        let last_fire_at_cell = Cell::new(time::Instant::now());
 
         key_ev_controller.connect_key_pressed(move |_, key, _, _| {
             let mut game = game_mutex_user_input.lock().unwrap();
@@ -59,7 +61,10 @@ fn main() -> glib::ExitCode {
                     game.move_player(Direction::Right);
                 }
                 gtk::gdk::Key::Up => {
-                    game.fire_laser();
+                    if last_fire_at_cell.get().elapsed().as_secs() >= 1 {
+                        game.fire_laser();
+                        last_fire_at_cell.set(time::Instant::now());
+                    }
                 }
                 _ => (),
             }
